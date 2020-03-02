@@ -1,4 +1,4 @@
-import ftp, os, zipfile, re, requests, json
+import ftp, os, zipfile, re, requests, json, my_email, datetime
 from xml.etree import ElementTree as ET
 from datetime import datetime
 name_region = ftp.regions('25')
@@ -82,6 +82,7 @@ for file_zip in files_zip:
             data['inn'] = xml_tree.find('*//INN').text
             data['date_position'] = isDefinedXmlNode(xml_tree.find('*//directDate'))
             data['org_name'] = xml_tree.find('*//fullName').text
+            data['contactEMail'] = xml_tree.find('*//contactEMail').text
             data['contactPerson'] = xml_tree.find('*//contactPerson/lastName').text + ' ' + xml_tree.find('*//contactPerson/firstName').text + ' ' + xml_tree.find('*//contactPerson/middleName').text
             data['purchaseNumber'] = xml_tree.find('*//purchaseNumber').text
             data['auth'] = 'Support2000'
@@ -89,10 +90,16 @@ for file_zip in files_zip:
             if(r.text == 'false'):
                 print("false s")
             else:
-                with open('test.html', 'w') as f:
-                    f.write(r.text)
-                print(r.text)
-                exit(0)
+                placeDate = datetime.strptime(data['date_position'][:19], '%Y-%m-%dT%H:%M:%S')
+                subject = 'В Вашем извещении № ' + data['purchaseNumber'] + ' размещенном ' + placeDate.strftime('%d.%m.%Y %H:%M') + ' найдены нарушения 44-ФЗ'
+                email = data['contactEMail']
+                email = 'ivad1004@gmail.com'
+                my_email.sendEsputnik(email, r.text, subject)
+                #with open('test.html', 'w+') as f:
+                #    f.write(r.text)
+                print("send "+data['contactEMail']+' '+data['purchaseNumber'])
+                #print(data['nacrezim'] + data['preimuschestva_ogranich'])
+                #exit(0)
         except Exception as E:
             print(E)
         #data['preimuschestva_ogranich'] = getTextXml(xml_tree.getElementsByTagName('name'))
