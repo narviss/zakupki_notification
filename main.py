@@ -1,32 +1,6 @@
 import ftp, os, zipfile, re, requests, json, my_email, datetime
 from xml.etree import ElementTree as ET
 from datetime import datetime
-name_region = ftp.regions('25')
-today = datetime.today()
-today = datetime.strptime('2020-02-26', '%Y-%m-%d')
-print(today)
-FTP = ftp.connect()
-
-url_mail = 'http://pm_zakupki.ru/scripts/mail.php'
-list_notifications = ftp.cwd(FTP, '/fcs_regions/' + name_region + '/notifications/prevMonth/')
-#list_notifications = ftp.cwd(FTP, '/fcs_regions/' + name_region + '/notifications/currMonth/')
-files_zip = ftp.download(FTP, list_notifications, today.strftime("%Y%m%d")+'\d\d_\d\d\d\.xml')
-
-'''
-	    $rowp = array(
-	    	'name_obj' => 'lol утепленное для осужденных женского пола тип А:;:Полупальто утепленное для осужденных женского пола тип А',
-		    'Ktru' => '',
-		    'okpd' => '14.12.30.112:;:14.12.30.112',
-		    'znvlp' => '',
-		    'formdrug' => '',
-		    'dozdrug' => '',
-		    'PlacingwayName' => 'Электронный аукцион',
-		    'objectname' => 'полупальто',
-		    'preimuschestva_ogranich' => 'Преимущества',
-		    'nacrezim' => '',
-		    'date_position' => '2020-02-26'
-	    );
-'''
 
 def getTextXml(nodelist):
     print(nodelist)
@@ -39,15 +13,16 @@ def isDefinedXmlNode(var, emptystr = ''):
     else:
         return emptystr
 
-'''
-for server in doc.findall('server'):
-    host = server.find('./host').text
-    print host
-    for channel in server.findall('channel'):
-        name = channel.find('name').text
-        print name
-'''
+name_region = ftp.regions('25')
+today = datetime.today()
+#today = datetime.strptime('2020-02-27', '%Y-%m-%d')
+#print(today)
+FTP = ftp.connect()
 
+url_mail = 'http://pm_zakupki.ru/scripts/mail.php'
+#list_notifications = ftp.cwd(FTP, '/fcs_regions/' + name_region + '/notifications/prevMonth/')
+list_notifications = ftp.cwd(FTP, '/fcs_regions/' + name_region + '/notifications/currMonth/')
+files_zip = ftp.download(FTP, list_notifications, today.strftime("%Y%m%d")+'\d\d_\d\d\d\.xml')
 for file_zip in files_zip:
     print(file_zip)
     z = zipfile.ZipFile(file_zip['path'], 'r')
@@ -87,7 +62,7 @@ for file_zip in files_zip:
             data['purchaseNumber'] = xml_tree.find('*//purchaseNumber').text
             data['auth'] = 'Support2000'
             r = requests.post(url_mail, data=data)
-            if(r.text == 'false'):
+            if(r.text == 'false' or len(data['okpd']) == 0):
                 print("false s")
             else:
                 placeDate = datetime.strptime(data['date_position'][:19], '%Y-%m-%dT%H:%M:%S')
@@ -98,9 +73,7 @@ for file_zip in files_zip:
                 #with open('test.html', 'w+') as f:
                 #    f.write(r.text)
                 print("send "+data['contactEMail']+' '+data['purchaseNumber'])
-                #print(data['nacrezim'] + data['preimuschestva_ogranich'])
+                #print(data['preimuschestva_ogranich']+data['nacrezim'])
                 #exit(0)
         except Exception as E:
             print(E)
-        #data['preimuschestva_ogranich'] = getTextXml(xml_tree.getElementsByTagName('name'))
-        #print(data)
