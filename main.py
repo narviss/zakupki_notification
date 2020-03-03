@@ -1,4 +1,4 @@
-import ftp, os, zipfile, re, requests, json, my_email, datetime
+import ftp, os, zipfile, re, requests, json, my_email, datetime, shutil
 from xml.etree import ElementTree as ET
 from datetime import datetime
 
@@ -78,3 +78,7 @@ for reg in regions:
                     #exit(0)
             except Exception as E:
                 print(E)
+try:
+    shutil.rmtree(os.path.abspath(os.curdir)+'/tmp/')
+except:
+    pass

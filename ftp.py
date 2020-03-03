@@ -108,6 +108,10 @@ def cwd(ftp, dir):
 
 def download(ftp, arrFile, pdstr_file):
     tmp = []
+    try:
+        os.mkdir(os.path.abspath(os.curdir)+'/tmp/')
+    except:
+        pass
     for file in arrFile:
         if(re.search(pdstr_file,file)):
             if not os.path.isfile(os.path.abspath(os.curdir)+'/tmp/'+file):
