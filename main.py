@@ -21,7 +21,7 @@ for reg in regions:
     #print(today)
     FTP = ftp.connect()
 
-    url_mail = 'http://pm_zakupki.ru/scripts/mail.php'
+    url_mail = 'https://pm.zakupki.r2000.ru/scripts/mail.php'
     list_notifications = ftp.cwd(FTP, '/fcs_regions/' + name_region + '/notifications/currMonth/')
     files_zip = ftp.download(FTP, list_notifications, today.strftime("%Y%m%d")+'\d\d_\d\d\d\.xml')
     for file_zip in files_zip:
