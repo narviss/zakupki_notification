@@ -50,6 +50,8 @@ for reg in regions:
                 for okpd in xml_tree.findall('*//OKPD2'):
                     data['okpd'].append(okpd.find('code').text)
                     data['name_obj'].append(okpd.find('name').text)
+                for ns4 in xml_tree.findall('*//{http://zakupki.gov.ru/oos/base/1}name'):
+                    data['preimuschestva_ogranich'] += ns4.text
                 data['Ktru'] = ':;:'.join(data['Ktru'])
                 data['name_obj'] = ':;:'.join(data['name_obj'])
                 data['okpd'] = ':;:'.join(data['okpd'])
