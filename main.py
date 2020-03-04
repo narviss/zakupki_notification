@@ -63,7 +63,7 @@ for reg in regions:
                 data['purchaseNumber'] = xml_tree.find('*//purchaseNumber').text
                 data['auth'] = 'Support2000'
                 r = requests.post(url_mail, data=data)
-                if(r.text == 'false' or len(data['okpd']) == 0):
+                if(len(r.text) < 32 or len(data['okpd']) == 0):
                     print("false")
                 else:
                     placeDate = datetime.strptime(data['date_position'][:19], '%Y-%m-%dT%H:%M:%S')
